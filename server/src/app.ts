@@ -10,6 +10,7 @@ import organizationRoutes from './routes/organization.routes.js';
 import projectRoutes from './routes/project.routes.js';
 import environmentRoutes from './routes/environment.routes.js';
 import flagRoutes from './routes/flag.routes.js';
+import evaluationRoutes from './routes/evaluation.routes.js';
 
 export function createApp(): Express {
   const app = express();
@@ -69,6 +70,7 @@ export function createApp(): Express {
   app.use(`${config.API_PREFIX}/projects`, projectRoutes);
   app.use(`${config.API_PREFIX}/environments`, environmentRoutes);
   app.use(`${config.API_PREFIX}/flags`, flagRoutes);
+  app.use(`${config.API_PREFIX}/evaluate`, evaluationRoutes);
 
   // 404 Catch-All
   app.use((_req: Request, _res: Response, next) => {
