@@ -20,7 +20,7 @@ export class FlagForgeClient {
 
   constructor(options: FlagForgeOptions) {
     if (!options.apiKey) {
-      throw new Error('FlagForgeClient requires an apiKey');
+      throw new Error('FlagForgeClient requires a valid apiKey.');
     }
     this.apiKey = options.apiKey;
     this.baseUrl = (options.baseUrl || 'http://localhost:4000/api/v1').replace(/\/+$/, '');
@@ -35,6 +35,9 @@ export class FlagForgeClient {
     return `${flagKey}#${userPart}`;
   }
 
+  /**
+   * Evaluates a feature flag for an optional user context.
+   */
   async evaluate<T = boolean>(
     flagKey: string,
     user?: FlagForgeUser,
@@ -44,7 +47,7 @@ export class FlagForgeClient {
       ? defaultValue
       : this.offlineFallback[flagKey] ?? false) as unknown as T;
 
-    // Check local cache
+    // 1. Check Local In-Memory Cache
     if (this.enableLocalCache) {
       const cacheKey = this.getCacheKey(flagKey, user);
       const cached = this.cache.get(cacheKey);
@@ -81,10 +84,10 @@ export class FlagForgeClient {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`FlagForge evaluation failed with status ${response.status}`);
+        throw new Error(`FlagForge evaluation endpoint responded with status ${response.status}`);
       }
 
-      const body = await response.json();
+      const body = (await response.json()) as any;
       const result: EvaluationResult<T> = {
         flagKey,
         enabled: body.enabled,
@@ -93,7 +96,7 @@ export class FlagForgeClient {
         version: body.version,
       };
 
-      // Store in local cache
+      // Store in Local Cache
       if (this.enableLocalCache) {
         const cacheKey = this.getCacheKey(flagKey, user);
         this.cache.set(cacheKey, {
@@ -105,7 +108,7 @@ export class FlagForgeClient {
       return result;
     } catch (err: any) {
       clearTimeout(timeoutId);
-      // Safe fallback on error or timeout
+      // Safe fallback on network failure, timeout, or server error
       return {
         flagKey,
         enabled: Boolean(fallbackDefault),
@@ -115,6 +118,9 @@ export class FlagForgeClient {
     }
   }
 
+  /**
+   * Helper method that evaluates a flag and returns a boolean value directly.
+   */
   async isEnabled(
     flagKey: string,
     user?: FlagForgeUser,
@@ -124,6 +130,72 @@ export class FlagForgeClient {
     return result.enabled;
   }
 
+  /**
+   * Batch evaluates multiple flags in a single HTTP round-trip.
+   */
+  async evaluateBatch(
+    flagKeys?: string[],
+    user?: FlagForgeUser
+  ): Promise<Record<string, EvaluationResult<any>>> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
+
+    try {
+      const response = await fetch(`${this.baseUrl}/evaluate/batch`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Environment-Key': this.apiKey,
+        },
+        body: JSON.stringify({
+          flagKeys,
+          user: user
+            ? {
+                key: user.key,
+                attributes: user.attributes || {},
+              }
+            : undefined,
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`FlagForge batch evaluation failed with status ${response.status}`);
+      }
+
+      const body = (await response.json()) as { flags: Record<string, any> };
+      const output: Record<string, EvaluationResult<any>> = {};
+
+      for (const [key, evalRes] of Object.entries(body.flags || {})) {
+        output[key] = {
+          flagKey: key,
+          enabled: evalRes.enabled,
+          value: evalRes.value !== undefined ? evalRes.value : evalRes.enabled,
+          reason: evalRes.reason,
+          version: evalRes.version,
+        };
+
+        if (this.enableLocalCache) {
+          const cacheKey = this.getCacheKey(key, user);
+          this.cache.set(cacheKey, {
+            result: output[key],
+            expiresAt: Date.now() + this.cacheTtlMs,
+          });
+        }
+      }
+
+      return output;
+    } catch (err) {
+      clearTimeout(timeoutId);
+      return {};
+    }
+  }
+
+  /**
+   * Clears all entries from the local in-memory cache.
+   */
   clearCache(): void {
     this.cache.clear();
   }

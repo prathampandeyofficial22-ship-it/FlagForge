@@ -1,0 +1,22 @@
+{
+  "name": "flagforge-example-node-app",
+  "version": "1.0.0",
+  "description": "Example Node.js application integrating @flagforge/node-sdk",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@flagforge/node-sdk": "*",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
