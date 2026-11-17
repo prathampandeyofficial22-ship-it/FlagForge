@@ -7,6 +7,8 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { NotFoundError } from './utils/errors.js';
 import authRoutes from './routes/auth.routes.js';
 import organizationRoutes from './routes/organization.routes.js';
+import projectRoutes from './routes/project.routes.js';
+import environmentRoutes from './routes/environment.routes.js';
 
 export function createApp(): Express {
   const app = express();
@@ -63,6 +65,8 @@ export function createApp(): Express {
   // Mount API modules
   app.use(`${config.API_PREFIX}/auth`, authRoutes);
   app.use(`${config.API_PREFIX}/organizations`, organizationRoutes);
+  app.use(`${config.API_PREFIX}/projects`, projectRoutes);
+  app.use(`${config.API_PREFIX}/environments`, environmentRoutes);
 
   // 404 Catch-All
   app.use((_req: Request, _res: Response, next) => {

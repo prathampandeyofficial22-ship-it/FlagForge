@@ -5,6 +5,10 @@ import {
   addMemberSchema,
   updateRoleSchema,
 } from '../controllers/organization.controller.js';
+import {
+  ProjectController,
+  createProjectSchema,
+} from '../controllers/project.controller.js';
 import { validate } from '../middleware/validate.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireRole } from '../middleware/rbac.js';
@@ -34,6 +38,15 @@ router.delete(
   '/:orgId/members/:memberId',
   requireRole('admin'),
   OrganizationController.removeMember
+);
+
+// Projects within organization
+router.get('/:orgId/projects', requireRole('viewer'), ProjectController.list);
+router.post(
+  '/:orgId/projects',
+  requireRole('developer'),
+  validate(createProjectSchema),
+  ProjectController.create
 );
 
 export default router;
