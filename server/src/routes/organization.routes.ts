@@ -1,0 +1,39 @@
+import { Router } from 'express';
+import {
+  OrganizationController,
+  createOrgSchema,
+  addMemberSchema,
+  updateRoleSchema,
+} from '../controllers/organization.controller.js';
+import { validate } from '../middleware/validate.js';
+import { requireAuth } from '../middleware/auth.js';
+import { requireRole } from '../middleware/rbac.js';
+
+const router = Router();
+
+router.use(requireAuth);
+
+router.post('/', validate(createOrgSchema), OrganizationController.create);
+router.get('/', OrganizationController.listUserOrgs);
+
+router.get('/:orgId', requireRole('viewer'), OrganizationController.getOne);
+router.get('/:orgId/members', requireRole('viewer'), OrganizationController.listMembers);
+router.post(
+  '/:orgId/members',
+  requireRole('admin'),
+  validate(addMemberSchema),
+  OrganizationController.addMember
+);
+router.patch(
+  '/:orgId/members/:memberId',
+  requireRole('admin'),
+  validate(updateRoleSchema),
+  OrganizationController.updateMemberRole
+);
+router.delete(
+  '/:orgId/members/:memberId',
+  requireRole('admin'),
+  OrganizationController.removeMember
+);
+
+export default router;
