@@ -8,6 +8,10 @@ import {
   EnvironmentController,
   createEnvSchema,
 } from '../controllers/environment.controller.js';
+import {
+  FlagController,
+  createFlagSchema,
+} from '../controllers/flag.controller.js';
 import { validate } from '../middleware/validate.js';
 import { requireAuth } from '../middleware/auth.js';
 
@@ -26,6 +30,14 @@ router.post(
   '/:projectId/environments',
   validate(createEnvSchema),
   EnvironmentController.create
+);
+
+// Feature Flag operations under project
+router.get('/:projectId/flags', FlagController.list);
+router.post(
+  '/:projectId/flags',
+  validate(createFlagSchema),
+  FlagController.create
 );
 
 export default router;
