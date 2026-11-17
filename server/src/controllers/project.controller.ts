@@ -20,7 +20,7 @@ export const updateProjectSchema = z.object({
 export class ProjectController {
   static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const orgId = req.params.orgId || req.organizationId!;
+      const orgId = (req.params.orgId as string) || req.organizationId!;
       const result = await ProjectService.createProject(orgId, req.user!.id, req.body);
       res.status(201).json({
         success: true,
@@ -33,7 +33,7 @@ export class ProjectController {
 
   static async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const orgId = req.params.orgId || req.organizationId!;
+      const orgId = (req.params.orgId as string) || req.organizationId!;
       const projects = await ProjectService.listProjects(orgId);
       res.status(200).json({
         success: true,
@@ -46,7 +46,7 @@ export class ProjectController {
 
   static async getOne(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const project = await ProjectService.getProjectById(req.params.projectId);
+      const project = await ProjectService.getProjectById(req.params.projectId as string);
       res.status(200).json({
         success: true,
         data: project,
@@ -58,7 +58,11 @@ export class ProjectController {
 
   static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const project = await ProjectService.updateProject(req.params.projectId, req.user!.id, req.body);
+      const project = await ProjectService.updateProject(
+        req.params.projectId as string,
+        req.user!.id,
+        req.body
+      );
       res.status(200).json({
         success: true,
         data: project,
@@ -70,7 +74,7 @@ export class ProjectController {
 
   static async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      await ProjectService.deleteProject(req.params.projectId, req.user!.id);
+      await ProjectService.deleteProject(req.params.projectId as string, req.user!.id);
       res.status(200).json({
         success: true,
         data: { message: 'Project and all associated resources deleted successfully' },

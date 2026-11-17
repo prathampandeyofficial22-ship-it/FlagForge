@@ -1,0 +1,166 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FlagForge API",
+    "version": "1.0.0",
+    "description": "Production-Ready Feature Flag & Release Management Platform REST API"
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "API v1 Endpoint"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "EnvironmentKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Environment-Key"
+      }
+    }
+  },
+  "paths": {
+    "/evaluate": {
+      "post": {
+        "summary": "Evaluate Feature Flag",
+        "description": "High-throughput endpoint for SDKs and external applications to evaluate a feature flag for a user context.",
+        "security": [
+          { "EnvironmentKeyAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["flagKey"],
+                "properties": {
+                  "flagKey": { "type": "string", "example": "ai-recommendations" },
+                  "user": {
+                    "type": "object",
+                    "required": ["key"],
+                    "properties": {
+                      "key": { "type": "string", "example": "user_123" },
+                      "attributes": {
+                        "type": "object",
+                        "example": { "country": "US", "plan": "enterprise" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Evaluation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "flagKey": { "type": "string" },
+                    "enabled": { "type": "boolean" },
+                    "value": {},
+                    "reason": { "type": "string", "example": "PERCENTAGE_ROLLOUT" },
+                    "version": { "type": "number" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Missing or invalid SDK API key" },
+          "404": { "description": "Feature flag not found" }
+        }
+      }
+    },
+    "/evaluate/batch": {
+      "post": {
+        "summary": "Batch Evaluate Feature Flags",
+        "security": [
+          { "EnvironmentKeyAuth": [] }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "flagKeys": { "type": "array", "items": { "type": "string" } },
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "key": { "type": "string" },
+                      "attributes": { "type": "object" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch evaluation map"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Register User and Onboard Organization",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "name"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "minLength": 8 },
+                  "name": { "type": "string" },
+                  "organizationName": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created with JWT token and organization" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Authenticate User",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Authenticated with JWT token" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    }
+  }
+}

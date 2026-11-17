@@ -48,7 +48,7 @@ export class OrganizationController {
 
   static async getOne(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const org = await OrganizationService.getOrganization(req.params.orgId);
+      const org = await OrganizationService.getOrganization(req.params.orgId as string);
       res.status(200).json({
         success: true,
         data: org,
@@ -60,7 +60,7 @@ export class OrganizationController {
 
   static async listMembers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const members = await OrganizationService.listMembers(req.params.orgId);
+      const members = await OrganizationService.listMembers(req.params.orgId as string);
       res.status(200).json({
         success: true,
         data: members,
@@ -73,7 +73,7 @@ export class OrganizationController {
   static async addMember(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const member = await OrganizationService.addMember(
-        req.params.orgId,
+        req.params.orgId as string,
         req.user!.id,
         req.body.email,
         req.body.role
@@ -90,9 +90,9 @@ export class OrganizationController {
   static async updateMemberRole(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const member = await OrganizationService.updateMemberRole(
-        req.params.orgId,
+        req.params.orgId as string,
         req.user!.id,
-        req.params.memberId,
+        req.params.memberId as string,
         req.body.role
       );
       res.status(200).json({
@@ -107,9 +107,9 @@ export class OrganizationController {
   static async removeMember(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       await OrganizationService.removeMember(
-        req.params.orgId,
+        req.params.orgId as string,
         req.user!.id,
-        req.params.memberId
+        req.params.memberId as string
       );
       res.status(200).json({
         success: true,

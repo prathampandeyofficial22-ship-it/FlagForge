@@ -21,6 +21,37 @@ services:
     volumes:
       - redis-data:/data
 
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: flagforge-server
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      MONGODB_URI: mongodb://mongodb:27017/flagforge
+      REDIS_URL: redis://redis:6379
+      REDIS_ENABLED: "true"
+      JWT_SECRET: production-secret-flagforge-jwt-key-replace-in-env
+      CORS_ORIGIN: http://localhost:80
+    depends_on:
+      - mongodb
+      - redis
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: flagforge-client
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+
 volumes:
   mongo-data:
   redis-data:

@@ -1,6 +1,7 @@
 {
   "name": "flagforge-server",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend REST API and Evaluation Engine for FlagForge",
   "main": "dist/index.js",
   "scripts": {

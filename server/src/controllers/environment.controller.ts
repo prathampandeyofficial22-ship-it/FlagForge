@@ -13,7 +13,7 @@ export const createEnvSchema = z.object({
 export class EnvironmentController {
   static async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const environments = await EnvironmentService.listEnvironments(req.params.projectId);
+      const environments = await EnvironmentService.listEnvironments(req.params.projectId as string);
       res.status(200).json({
         success: true,
         data: environments,
@@ -26,7 +26,7 @@ export class EnvironmentController {
   static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const result = await EnvironmentService.createEnvironment(
-        req.params.projectId,
+        req.params.projectId as string,
         req.user!.id,
         req.body
       );
@@ -42,7 +42,7 @@ export class EnvironmentController {
   static async rotateKeys(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const result = await EnvironmentService.rotateKeys(
-        req.params.envId,
+        req.params.envId as string,
         req.user!.id
       );
       res.status(200).json({

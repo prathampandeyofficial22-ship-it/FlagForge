@@ -2,6 +2,10 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import swaggerUi from 'swagger-ui-express';
 import { config } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { NotFoundError } from './utils/errors.js';
@@ -11,6 +15,9 @@ import projectRoutes from './routes/project.routes.js';
 import environmentRoutes from './routes/environment.routes.js';
 import flagRoutes from './routes/flag.routes.js';
 import evaluationRoutes from './routes/evaluation.routes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export function createApp(): Express {
   const app = express();
@@ -44,6 +51,17 @@ export function createApp(): Express {
     app.use('/api', limiter);
   }
 
+  // Swagger API Documentation
+  const swaggerPath = path.resolve(__dirname, './docs/swagger.json');
+  if (fs.existsSync(swaggerPath)) {
+    try {
+      const swaggerDoc = JSON.parse(fs.readFileSync(swaggerPath, 'utf-8'));
+      app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+    } catch {
+      // Fallback if doc parsing fails
+    }
+  }
+
   // Health check endpoint
   app.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({
@@ -71,6 +89,18 @@ export function createApp(): Express {
   app.use(`${config.API_PREFIX}/environments`, environmentRoutes);
   app.use(`${config.API_PREFIX}/flags`, flagRoutes);
   app.use(`${config.API_PREFIX}/evaluate`, evaluationRoutes);
+
+  // Serve static client assets in production if available
+  const clientDist = path.resolve(__dirname, '../../client/dist');
+  if (config.NODE_ENV === 'production' && fs.existsSync(clientDist)) {
+    app.use(express.static(clientDist));
+    app.get('*', (req: Request, res: Response, next) => {
+      if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+        return next();
+      }
+      res.sendFile(path.join(clientDist, 'index.html'));
+    });
+  }
 
   // 404 Catch-All
   app.use((_req: Request, _res: Response, next) => {

@@ -63,7 +63,7 @@ export class FlagController {
   static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const flag = await FlagService.createFlag(
-        req.params.projectId,
+        req.params.projectId as string,
         req.user!.id,
         req.body
       );
@@ -78,7 +78,7 @@ export class FlagController {
 
   static async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const flags = await FlagService.listFlags(req.params.projectId);
+      const flags = await FlagService.listFlags(req.params.projectId as string);
       res.status(200).json({
         success: true,
         data: flags,
@@ -90,7 +90,7 @@ export class FlagController {
 
   static async getOne(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const flag = await FlagService.getFlagDetail(req.params.flagId);
+      const flag = await FlagService.getFlagDetail(req.params.flagId as string);
       res.status(200).json({
         success: true,
         data: flag,
@@ -103,7 +103,7 @@ export class FlagController {
   static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const flag = await FlagService.updateFlag(
-        req.params.flagId,
+        req.params.flagId as string,
         req.user!.id,
         req.body
       );
@@ -118,7 +118,7 @@ export class FlagController {
 
   static async archive(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      await FlagService.archiveFlag(req.params.flagId, req.user!.id);
+      await FlagService.archiveFlag(req.params.flagId as string, req.user!.id);
       res.status(200).json({
         success: true,
         data: { message: 'Feature flag archived successfully' },
@@ -131,8 +131,8 @@ export class FlagController {
   static async getEnvironmentConfig(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const config = await FlagService.getEnvironmentConfig(
-        req.params.flagId,
-        req.params.envId
+        req.params.flagId as string,
+        req.params.envId as string
       );
       res.status(200).json({
         success: true,
@@ -146,8 +146,8 @@ export class FlagController {
   static async updateEnvironmentConfig(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const config = await FlagService.updateEnvironmentConfig(
-        req.params.flagId,
-        req.params.envId,
+        req.params.flagId as string,
+        req.params.envId as string,
         req.user!.id,
         req.body
       );
@@ -163,8 +163,8 @@ export class FlagController {
   static async toggle(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const result = await FlagService.toggleFlag(
-        req.params.flagId,
-        req.params.envId,
+        req.params.flagId as string,
+        req.params.envId as string,
         req.user!.id
       );
       res.status(200).json({
@@ -179,8 +179,8 @@ export class FlagController {
   static async killSwitch(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const result = await FlagService.triggerKillSwitch(
-        req.params.flagId,
-        req.params.envId,
+        req.params.flagId as string,
+        req.params.envId as string,
         req.user!.id
       );
       res.status(200).json({

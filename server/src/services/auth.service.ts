@@ -48,7 +48,7 @@ export class AuthService {
         email: user.email,
       },
       config.JWT_SECRET,
-      { expiresIn: config.JWT_EXPIRES_IN }
+      { expiresIn: config.JWT_EXPIRES_IN as any }
     );
   }
 

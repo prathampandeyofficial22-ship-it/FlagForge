@@ -19,8 +19,8 @@ describe('Server Bootstrap & Health Endpoints', () => {
     expect(res.body).toHaveProperty('name', 'FlagForge API');
   });
 
-  it('GET /nonexistent returns 404', async () => {
-    const res = await request(app).get('/nonexistent');
+  it('GET /api/v1/nonexistent returns 404', async () => {
+    const res = await request(app).get('/api/v1/nonexistent');
     expect(res.status).toBe(404);
   });
 });

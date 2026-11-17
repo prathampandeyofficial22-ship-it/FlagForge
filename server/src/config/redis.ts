@@ -1,4 +1,4 @@
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import { config } from './env.js';
 import { logger } from '../utils/logger.js';
 
@@ -58,7 +58,7 @@ class RedisCache implements ICacheService {
         this.client = new Redis(config.REDIS_URL, {
           lazyConnect: true,
           maxRetriesPerRequest: 2,
-          retryStrategy(times) {
+          retryStrategy(times: number) {
             if (times > 3) return null; // Stop retrying after 3 attempts
             return Math.min(times * 100, 2000);
           },
@@ -69,12 +69,12 @@ class RedisCache implements ICacheService {
           logger.info('Connected to Redis server');
         });
 
-        this.client.on('error', (err) => {
+        this.client.on('error', (err: any) => {
           this.connected = false;
           logger.warn('Redis error, degrading to in-memory cache', { message: err.message });
         });
 
-        this.client.connect().catch((err) => {
+        this.client.connect().catch((err: any) => {
           this.connected = false;
           logger.warn('Could not connect to Redis, falling back to memory cache', { message: err.message });
         });

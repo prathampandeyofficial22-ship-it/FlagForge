@@ -1,24 +1,98 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { DashboardLayout } from './components/layout/DashboardLayout';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
+import { Dashboard } from './pages/Dashboard';
+import { FlagsList } from './pages/FlagsList';
+import { FlagDetail } from './pages/FlagDetail';
+import { Environments } from './pages/Environments';
+import { AuditLogs } from './pages/AuditLogs';
+import { Settings } from './pages/Settings';
+
+const queryClient = new QueryClient();
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-surface-950 flex items-center justify-center text-xs text-zinc-500 font-mono">
+        Authenticating session...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <DashboardLayout>{children}</DashboardLayout>;
+}
+
 export default function App() {
   return (
-    <div className="min-h-screen bg-surface-950 text-zinc-100 flex flex-col items-center justify-center p-6">
-      <div className="max-w-md w-full bg-surface-900 border border-border-dark p-8 rounded-lg shadow-sm">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 rounded bg-brand-600 flex items-center justify-center font-bold text-white text-sm">
-            FF
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold text-zinc-100">FlagForge</h1>
-            <p className="text-xs text-zinc-400">Feature Flag & Release Management Platform</p>
-          </div>
-        </div>
-        <p className="text-sm text-zinc-300 mb-6">
-          System initialized. Phase 1 architecture and foundation ready.
-        </p>
-        <div className="flex items-center justify-between text-xs text-zinc-500 border-t border-border-dark pt-4">
-          <span>Server: localhost:4000</span>
-          <span className="text-emerald-400 font-mono">● Online</span>
-        </div>
-      </div>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/flags"
+              element={
+                <ProtectedRoute>
+                  <FlagsList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/flags/:flagId"
+              element={
+                <ProtectedRoute>
+                  <FlagDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/environments"
+              element={
+                <ProtectedRoute>
+                  <Environments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/audit-logs"
+              element={
+                <ProtectedRoute>
+                  <AuditLogs />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }

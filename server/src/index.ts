@@ -1,12 +1,14 @@
 import { createApp } from './app.js';
 import { config } from './config/env.js';
 import { connectDB } from './config/db.js';
+import { ensureIndexes } from './config/initIndexes.js';
 import { logger } from './utils/logger.js';
 
 async function bootstrap() {
   try {
     // Connect to database
     await connectDB();
+    await ensureIndexes();
 
     const app = createApp();
 
