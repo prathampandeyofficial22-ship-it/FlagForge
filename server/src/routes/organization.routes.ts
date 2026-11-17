@@ -9,6 +9,7 @@ import {
   ProjectController,
   createProjectSchema,
 } from '../controllers/project.controller.js';
+import { AnalyticsController } from '../controllers/analytics.controller.js';
 import { validate } from '../middleware/validate.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireRole } from '../middleware/rbac.js';
@@ -48,5 +49,9 @@ router.post(
   validate(createProjectSchema),
   ProjectController.create
 );
+
+// Analytics & Audit Logs
+router.get('/:orgId/analytics', requireRole('viewer'), AnalyticsController.getOrgAnalytics);
+router.get('/:orgId/audit-logs', requireRole('viewer'), AnalyticsController.getAuditLogs);
 
 export default router;

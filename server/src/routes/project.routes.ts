@@ -12,6 +12,7 @@ import {
   FlagController,
   createFlagSchema,
 } from '../controllers/flag.controller.js';
+import { AnalyticsController } from '../controllers/analytics.controller.js';
 import { validate } from '../middleware/validate.js';
 import { requireAuth } from '../middleware/auth.js';
 
@@ -23,6 +24,7 @@ router.use(requireAuth);
 router.get('/:projectId', ProjectController.getOne);
 router.patch('/:projectId', validate(updateProjectSchema), ProjectController.update);
 router.delete('/:projectId', ProjectController.delete);
+router.get('/:projectId/analytics', AnalyticsController.getProjectAnalytics);
 
 // Environment operations under project
 router.get('/:projectId/environments', EnvironmentController.list);
