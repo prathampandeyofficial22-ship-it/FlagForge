@@ -1,0 +1,29 @@
+{
+  "name": "@flagforge/node-sdk",
+  "version": "1.0.0",
+  "description": "Official Node.js SDK for the FlagForge Feature Flag & Release Management Platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "feature-flags",
+    "flagforge",
+    "feature-management",
+    "rollout",
+    "targeting"
+  ],
+  "author": "FlagForge Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
