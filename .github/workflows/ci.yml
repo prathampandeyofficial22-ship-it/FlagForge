@@ -31,7 +31,7 @@ jobs:
         run: npm run build:backend
 
       - name: Build Client
-        run: npm run build:client
+        run: npm run build:frontend
 
       - name: Run Server Unit & Integration Tests
         run: npm run test:server
