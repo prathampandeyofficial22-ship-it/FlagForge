@@ -1,4 +1,7 @@
-const API_BASE = '/api/v1';
+const rawBase = import.meta.env.VITE_API_URL || '';
+const API_BASE = rawBase
+  ? (rawBase.endsWith('/api/v1') ? rawBase : `${rawBase.replace(/\/$/, '')}/api/v1`)
+  : '/api/v1';
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem('ff_token');
