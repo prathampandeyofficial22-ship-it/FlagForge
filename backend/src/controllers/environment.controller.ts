@@ -1,14 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { z } from 'zod';
 import { EnvironmentService } from '../services/environment.service.js';
 
-export const createEnvSchema = z.object({
-  body: z.object({
-    name: z.string().min(2, 'Environment name must be at least 2 characters'),
-    key: z.string().regex(/^[a-z0-9-]+$/, 'Key must be lowercase alphanumeric with hyphens').optional(),
-    type: z.enum(['development', 'staging', 'production', 'custom']).optional(),
-  }),
-});
+export { createEnvSchema } from '../validators/environment.validator.js';
 
 export class EnvironmentController {
   static async list(req: Request, res: Response, next: NextFunction): Promise<void> {

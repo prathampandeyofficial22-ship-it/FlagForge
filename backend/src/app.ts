@@ -90,15 +90,19 @@ export function createApp(): Express {
   app.use(`${config.API_PREFIX}/flags`, flagRoutes);
   app.use(`${config.API_PREFIX}/evaluate`, evaluationRoutes);
 
-  // Serve static client assets in production if available
-  const clientDist = path.resolve(__dirname, '../../client/dist');
-  if (config.NODE_ENV === 'production' && fs.existsSync(clientDist)) {
-    app.use(express.static(clientDist));
+  // Serve static frontend assets in production if available
+  const frontendDist = [
+    path.resolve(__dirname, '../../frontend/dist'),
+    path.resolve(__dirname, '../../client/dist'),
+  ].find((p) => fs.existsSync(p));
+
+  if (config.NODE_ENV === 'production' && frontendDist) {
+    app.use(express.static(frontendDist));
     app.get('*', (req: Request, res: Response, next) => {
       if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
         return next();
       }
-      res.sendFile(path.join(clientDist, 'index.html'));
+      res.sendFile(path.join(frontendDist, 'index.html'));
     });
   }
 

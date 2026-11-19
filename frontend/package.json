@@ -1,8 +1,9 @@
 {
-  "name": "flagforge-client",
+  "name": "flagforge-frontend",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "description": "Frontend React + Vite + Tailwind dashboard for FlagForge",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

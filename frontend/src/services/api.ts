@@ -65,17 +65,23 @@ export const api = {
   updateFlag: (flagId: string, body: any) =>
     request<any>(`/flags/${flagId}`, { method: 'PATCH', body: JSON.stringify(body) }),
   archiveFlag: (flagId: string) => request<any>(`/flags/${flagId}`, { method: 'DELETE' }),
+  deleteFlag: (flagId: string) => request<any>(`/flags/${flagId}`, { method: 'DELETE' }),
 
   // Flag Environment Configs
   updateEnvConfig: (flagId: string, envId: string, body: any) =>
     request<any>(`/flags/${flagId}/environments/${envId}`, { method: 'PUT', body: JSON.stringify(body) }),
+  updateFlagEnvConfig: (flagId: string, envId: string, body: any) =>
+    request<any>(`/flags/${flagId}/environments/${envId}`, { method: 'PUT', body: JSON.stringify(body) }),
   toggleFlag: (flagId: string, envId: string) =>
     request<any>(`/flags/${flagId}/environments/${envId}/toggle`, { method: 'POST' }),
   killSwitchFlag: (flagId: string, envId: string) =>
+    request<any>(`/flags/${flagId}/environments/${envId}/kill-switch`, { method: 'POST' }),
+  killSwitch: (flagId: string, envId: string) =>
     request<any>(`/flags/${flagId}/environments/${envId}/kill-switch`, { method: 'POST' }),
 
   // Analytics & Audit Logs
   getOrgAnalytics: (orgId: string) => request<any>(`/organizations/${orgId}/analytics`),
   getProjectAnalytics: (projectId: string) => request<any>(`/projects/${projectId}/analytics`),
   getAuditLogs: (orgId: string, page = 1) => request<any>(`/organizations/${orgId}/audit-logs?page=${page}`),
+  listAuditLogs: (orgId: string, page = 1) => request<any>(`/organizations/${orgId}/audit-logs?page=${page}`),
 };

@@ -21,11 +21,11 @@ services:
     volumes:
       - redis-data:/data
 
-  server:
+  backend:
     build:
       context: .
-      dockerfile: server/Dockerfile
-    container_name: flagforge-server
+      dockerfile: backend/Dockerfile
+    container_name: flagforge-backend
     restart: always
     ports:
       - "4000:4000"
@@ -41,16 +41,16 @@ services:
       - mongodb
       - redis
 
-  client:
+  frontend:
     build:
       context: .
-      dockerfile: client/Dockerfile
-    container_name: flagforge-client
+      dockerfile: frontend/Dockerfile
+    container_name: flagforge-frontend
     restart: always
     ports:
       - "80:80"
     depends_on:
-      - server
+      - backend
 
 volumes:
   mongo-data:

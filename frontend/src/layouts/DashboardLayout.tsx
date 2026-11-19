@@ -12,11 +12,11 @@ import {
   Building2,
   FolderGit2,
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { Button } from '../ui/Button';
-import { Dialog } from '../ui/Dialog';
-import { Input } from '../ui/Input';
-import { api } from '../../api/client';
+import { useAuth } from '../context/AuthContext';
+import { Button } from '../components/ui/Button';
+import { Dialog } from '../components/ui/Dialog';
+import { Input } from '../components/ui/Input';
+import { api } from '../services/api';
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const {

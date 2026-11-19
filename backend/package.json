@@ -1,5 +1,5 @@
 {
-  "name": "flagforge-server",
+  "name": "flagforge-backend",
   "version": "1.0.0",
   "type": "module",
   "description": "Backend REST API and Evaluation Engine for FlagForge",
