@@ -34,7 +34,7 @@ jobs:
         run: npm run build:frontend
 
       - name: Run Server Unit & Integration Tests
-        run: npm run test:server
+        run: npm run test:backend
 
       - name: Run SDK Tests
         run: npm run test:sdk
