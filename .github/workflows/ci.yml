@@ -28,7 +28,7 @@ jobs:
         run: npm run build:sdk
 
       - name: Build Server
-        run: npm run build:server
+        run: npm run build:backend
 
       - name: Build Client
         run: npm run build:client
